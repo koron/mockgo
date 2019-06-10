@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"flag"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/koron-go/srcdom"
+	"golang.org/x/tools/imports"
 )
 
 type errs []error
@@ -173,7 +175,7 @@ func path2pkgname(path string) (string, error) {
 	return filepath.Base(p), nil
 }
 
-func generateMockType(outdir string, typ *srcdom.Type, pkg *srcdom.Package) error {
+func generateMockType(outdir string, applyFormat bool, typ *srcdom.Type, pkg *srcdom.Package) error {
 	pkgn, err := path2pkgname(outdir)
 	if err != nil {
 		return err
@@ -186,7 +188,15 @@ func generateMockType(outdir string, typ *srcdom.Type, pkg *srcdom.Package) erro
 		return err
 	}
 	defer f.Close()
-	w := bufio.NewWriter(f)
+	bw := bufio.NewWriter(f)
+
+	var w io.Writer = bw
+	var bb *bytes.Buffer
+
+	if applyFormat {
+		bb = &bytes.Buffer{}
+		w = bb
+	}
 
 	err = generateMockType0(w, "mock", pkgn, typ, pkg)
 	if err != nil {
@@ -195,7 +205,17 @@ func generateMockType(outdir string, typ *srcdom.Type, pkg *srcdom.Package) erro
 		return err
 	}
 
-	err = w.Flush()
+	if bb != nil {
+		b, err := imports.Process(fname, bb.Bytes(), nil)
+		if err != nil {
+			f.Close()
+			os.Remove(fpath)
+			return err
+		}
+		bw.Write(b)
+	}
+
+	err = bw.Flush()
 	if err != nil {
 		f.Close()
 		os.Remove(fpath)
@@ -220,9 +240,11 @@ func gen() error {
 		pkgname  string
 		outdir   string
 		typnames []string
+		noFormat bool
 	)
 	flag.StringVar(&pkgname, "package", "", `package name`)
 	flag.StringVar(&outdir, "outdir", ".", `output directory`)
+	flag.BoolVar(&noFormat, "noformat", false, `suppress to apply goimports`)
 	flag.Parse()
 	typnames = flag.Args()
 
@@ -247,7 +269,7 @@ func gen() error {
 			log.Print(err)
 			continue
 		}
-		err := generateMockType(outdir, typ, pkg)
+		err := generateMockType(outdir, !noFormat, typ, pkg)
 		if err != nil {
 			err2 := fmt.Errorf("failed to generate mock for %s: %s", typ, err)
 			errs.Append(err2)
