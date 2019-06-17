@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/koron-go/srcdom"
 	"golang.org/x/tools/imports"
@@ -100,6 +101,15 @@ func vname(name string, attr string, n int) string {
 	return attr + strconv.Itoa(n)
 }
 
+func toPub(s string) string {
+	if s == "" {
+		return ""
+	}
+	_, n := utf8.DecodeRuneInString(s)
+	p, r := s[:n], s[n:]
+	return strings.ToUpper(p) + r
+}
+
 func filterMethods(src []*srcdom.Func, typ *srcdom.Type) []*method {
 	var dst []*method
 	for _, f := range src {
@@ -115,7 +125,7 @@ func filterMethods(src []*srcdom.Func, typ *srcdom.Type) []*method {
 		}
 		for i, r := range f.Results {
 			m.rets.add(&variable{
-				name: vname(r.Name, "out", i),
+				name: vname(r.Name, "Out", i),
 				typ:  r.Type,
 			})
 		}
@@ -147,7 +157,7 @@ func generateMockType0(w io.Writer, mocktag string, pkgname string, typ *srcdom.
 		fmt.Fprintf(w, "// %s_P packs input parameters of %s#%s method.\n", m.fullname(), origtyp, m.name)
 		fmt.Fprintf(w, "type %s_P struct {\n", m.fullname())
 		for _, a := range m.args {
-			fmt.Fprintf(w, "\t%s %s\n", a.name, a.typ)
+			fmt.Fprintf(w, "\t%s %s\n", toPub(a.name), a.typ)
 		}
 		fmt.Fprintf(w, "}\n\n")
 		fmt.Fprintf(w, "// %s_R packs output parameters of %s#%s method.\n", m.fullname(), origtyp, m.name)
