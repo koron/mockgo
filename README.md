@@ -14,3 +14,9 @@ Generate mock for your types.
 $ cd ~/go/src/github.com/your/project/package
 $ mockgo -outdir . -pacakge github.com/thirdparity/libarary TargetType1 TargetType2
 ```
+
+### Usage
+
+```console
+$ mockgo -outdir {output dir} -package {full path of the pacakge} [target classes]
+```
