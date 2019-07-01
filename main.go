@@ -32,7 +32,7 @@ func (e errs) Error() string {
 	b := &strings.Builder{}
 	fmt.Fprintln(b, "found some errors:")
 	for i, err := range e {
-		fmt.Fprintf(b, "#d - %v\n", i+1, err)
+		fmt.Fprintf(b, "#%d - %v\n", i+1, err)
 	}
 	return b.String()
 }
@@ -134,6 +134,13 @@ func filterMethods(src []*srcdom.Func, typ *srcdom.Type) []*method {
 	return dst
 }
 
+func toStructType(typ string) string {
+	if strings.HasPrefix(typ, "...") {
+		return "[]" + typ[3:]
+	}
+	return typ
+}
+
 func generateMockType0(w io.Writer, mocktag string, pkgname string, typ *srcdom.Type, pkg *srcdom.Package) error {
 	methods := filterMethods(typ.Methods, typ)
 	if len(methods) == 0 {
@@ -157,7 +164,8 @@ func generateMockType0(w io.Writer, mocktag string, pkgname string, typ *srcdom.
 		fmt.Fprintf(w, "// %s_P packs input parameters of %s#%s method.\n", m.fullname(), origtyp, m.name)
 		fmt.Fprintf(w, "type %s_P struct {\n", m.fullname())
 		for _, a := range m.args {
-			fmt.Fprintf(w, "\t%s %s\n", toPub(a.name), a.typ)
+			typ := toStructType(a.typ)
+			fmt.Fprintf(w, "\t%s %s\n", toPub(a.name), typ)
 		}
 		fmt.Fprintf(w, "}\n\n")
 		fmt.Fprintf(w, "// %s_R packs output parameters of %s#%s method.\n", m.fullname(), origtyp, m.name)
@@ -281,7 +289,7 @@ func gen() error {
 		}
 		err := generateMockType(outdir, !noFormat, typ, pkg)
 		if err != nil {
-			err2 := fmt.Errorf("failed to generate mock for %s: %s", typ, err)
+			err2 := fmt.Errorf("failed to generate mock for %s: %s", typ.Name, err)
 			errs.Append(err2)
 			log.Print(err2)
 			continue
