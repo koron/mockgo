@@ -20,5 +20,10 @@ $ mockgo -outdir . -pacakge github.com/thirdparity/libarary TargetType1 TargetTy
 ### Usage
 
 ```console
-$ mockgo [-noformat] -outdir {output dir} -package {package name or relative path} [target classes]
+$ mockgo [-noformat] -outdir {output dir} -package {package name or relative path} [target classes...]
 ```
+
+Where `[target class]` accepts two forms of name to specify type.
+
+*   `OriginalTypename` - Mock type name will be same with `OriginalTypename`
+*   `OriginalTypename:MockTypename` - Specify both original and mock type names
