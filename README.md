@@ -1,5 +1,7 @@
 # mockgo - mock generator for type aliased mock
 
+mockgo generates a test mock for tye type.
+
 ## Getting started
 
 How to install or update.
@@ -18,5 +20,5 @@ $ mockgo -outdir . -pacakge github.com/thirdparity/libarary TargetType1 TargetTy
 ### Usage
 
 ```console
-$ mockgo -outdir {output dir} -package {full path of the pacakge} [target classes]
+$ mockgo [-noformat] -outdir {output dir} -package {package name or relative path} [target classes]
 ```

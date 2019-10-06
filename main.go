@@ -273,11 +273,16 @@ func gen() error {
 		return errors.New("need one or more type names")
 	}
 
-	path := filepath.Join(build.Default.GOPATH, "src", pkgname)
+	// read source files, build srcdom.
+	path := filepath.ToSlash(pkgname)
+	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") {
+		path = filepath.Join(build.Default.GOPATH, "src", pkgname)
+	}
 	pkg, err := srcdom.Read(path)
 	if err != nil {
 		return err
 	}
+
 	var errs errs
 	for _, typn := range typnames {
 		typ, ok := pkg.Type(typn)
