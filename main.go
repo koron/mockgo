@@ -229,6 +229,7 @@ func generateMockType(outdir, mockTypn string, applyFormat bool, typ *srcdom.Typ
 		w = bb
 	}
 
+	verbosef("writing %s for %s mock", fpath, typ.Name)
 	err = generateMockType0(w, "mock", mockTypn, pkgn, typ, pkg)
 	if err != nil {
 		f.Close()
@@ -266,16 +267,21 @@ func generateMockType(outdir, mockTypn string, applyFormat bool, typ *srcdom.Typ
 	return nil
 }
 
+var (
+	verbose  bool
+	noFormat bool
+)
+
 func gen() error {
 	var (
 		pkgname  string
 		outdir   string
 		typnames []string
-		noFormat bool
 	)
 	flag.StringVar(&pkgname, "package", "", `package name`)
 	flag.StringVar(&outdir, "outdir", ".", `output directory`)
 	flag.BoolVar(&noFormat, "noformat", false, `suppress to apply goimports`)
+	flag.BoolVar(&verbose, "verbose", false, `verbose/debug messages`)
 	flag.Parse()
 	typnames = flag.Args()
 
@@ -312,6 +318,7 @@ func gen() error {
 		if mockTypn == "" {
 			mockTypn = typ.Name
 		}
+		log.Printf("typn=%s typ.IsInterface=%t mockTypn=%s", typn, typ.IsInterface, mockTypn)
 		err := generateMockType(outdir, mockTypn, !noFormat, typ, pkg)
 		if err != nil {
 			err2 := fmt.Errorf("failed to generate mock for %s: %s", typ.Name, err)
@@ -323,7 +330,15 @@ func gen() error {
 	if len(errs) > 0 {
 		return errs
 	}
+	verbosef("complete successfully")
 	return nil
+}
+
+func verbosef(msg string, args...interface{}) {
+	if !verbose {
+		return
+	}
+	log.Printf(msg, args...)
 }
 
 func main() {
