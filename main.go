@@ -219,6 +219,7 @@ func mockFilename(typn string) string {
 	}
 	return base + "_mock.go"
 }
+
 func generateMockType(outdir, mockTypn string, applyFormat bool, typ *srcdom.Type, pkg *srcdom.Package) error {
 	pkgn, err := path2pkgname(outdir)
 	if err != nil {
