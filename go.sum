@@ -1,3 +1,5 @@
+github.com/google/go-cmp v0.5.0 h1:/QaMHBdZ26BB3SSst0Iwl10Epc+xhTquomWX0oZEB6w=
+github.com/google/go-cmp v0.5.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/koron-go/srcdom v0.1.0 h1:ZxQAwiJaSqAi7P8kdK7BjMxH1fGKNjNl7473IUHWDtk=
 github.com/koron-go/srcdom v0.1.0/go.mod h1:q3GCS3vKYVFOePc+/yResMpuBOsuJ4k48hsnlagfJ1E=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
