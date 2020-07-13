@@ -286,6 +286,7 @@ var (
 	forTest    bool
 	mockSuffix bool
 	noFormat   bool
+	version bool
 )
 
 func gen() error {
@@ -300,8 +301,14 @@ func gen() error {
 	flag.StringVar(&outdir, "outdir", ".", "output directory")
 	flag.StringVar(&pkgname, "package", "", "package name")
 	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
+	flag.BoolVar(&version, "version", false, "show version end exit")
 	flag.Parse()
 	typnames = flag.Args()
+
+	if version {
+		showVersion()
+		return nil
+	}
 
 	if pkgname == "" {
 		return errors.New("need -package option")
@@ -359,6 +366,10 @@ func verbosef(msg string, args ...interface{}) {
 		return
 	}
 	log.Printf(msg, args...)
+}
+
+func showVersion() {
+	fmt.Printf("mockgo version %s\n", Version)
 }
 
 func main() {
