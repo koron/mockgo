@@ -247,7 +247,7 @@ func gen() error {
 	)
 	flag.BoolVar(&forTest, "fortest", false, "generate mock for plain test, without +mock")
 	flag.BoolVar(&mockSuffix, "mocksuffix", false, "add `Mock` suffix to generated mock types")
-	flag.IntVar(&mockRev, "revision", 1, "mock revision (1, or 2)")
+	flag.IntVar(&mockRev, "revision", 1, "mock revision (1-3)")
 	flag.BoolVar(&noFormat, "noformat", false, "suppress to apply goimports")
 	flag.StringVar(&outdir, "outdir", ".", "output directory")
 	flag.StringVar(&pkgname, "package", "", "package name")
@@ -273,6 +273,8 @@ func gen() error {
 		mockTypeGen = generateMockType1
 	case 2:
 		mockTypeGen = generateMockType2
+	case 3:
+		mockTypeGen = generateMockType3
 	default:
 		return fmt.Errorf("unknow mock revision: %d", mockRev)
 	}
