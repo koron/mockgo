@@ -25,7 +25,7 @@ func generateMockType3(w io.Writer, mockTag, mockTypn, mockPkgn string, typ *src
 	// write the mock type.
 	fmt.Fprintf(w, "// %s is a mock of %s for test.\n", mockTypn, origTypn)
 	fmt.Fprintf(w, "type %s struct {\n", mockTypn)
-	fmt.Fprintf(w, "\tQ *mockrt.Sequence\n")
+	fmt.Fprintf(w, "\tQ *mockrt3.Q\n")
 	fmt.Fprintf(w, "}\n")
 
 	for _, m := range methods {
