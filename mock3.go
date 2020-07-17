@@ -39,8 +39,8 @@ func generateMockType3(w io.Writer, mockTag, mockTypn, mockPkgn string, typ *src
 			fmt.Fprintf(w, "\t%s %s\n", toPub(a.name), typ)
 		}
 		fmt.Fprintf(w, "}\n\n")
-		fmt.Fprintf(w, "// P implements mockrt3.P interface\n")
-		fmt.Fprintf(w, "func (%s) P() {}\n\n", m.pname())
+		fmt.Fprintf(w, "// P__ implements mockrt3.P interface\n")
+		fmt.Fprintf(w, "func (%s) P__() {}\n\n", m.pname())
 
 		// write result type for the method.
 		fmt.Fprintf(w, "// %s packs output parameters of %s#%s method.\n", m.rname(), origTypn, m.name)
@@ -49,8 +49,8 @@ func generateMockType3(w io.Writer, mockTag, mockTypn, mockPkgn string, typ *src
 			fmt.Fprintf(w, "\t%s %s\n", r.name, r.typ)
 		}
 		fmt.Fprintf(w, "}\n\n")
-		fmt.Fprintf(w, "// R implements mockrt3.P interface\n")
-		fmt.Fprintf(w, "func (%s) R() {}\n\n", m.rname())
+		fmt.Fprintf(w, "// R__ implements mockrt3.R interface\n")
+		fmt.Fprintf(w, "func (%s) R__() {}\n\n", m.rname())
 
 		// write mock func for the method.
 		fmt.Fprintf(w, "// %s is mock of %s#%[1]s method.\n", m.name, origTypn)

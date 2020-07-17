@@ -1,5 +1,5 @@
 /*
-Package mockrt provides mock runtime for mockgo
+Package mockrt3 provides mock runtime for mockgo
 */
 package mockrt3
 
@@ -10,10 +10,10 @@ import (
 )
 
 // P is a trait for types of request parameter.
-type P interface{ P() }
+type P interface{ P__() }
 
 // R is a trait for types of response result.
-type R interface{ R() }
+type R interface{ R__() }
 
 // C defines pair of request parameter (P) and response result (R) for a method
 // call.
@@ -48,37 +48,37 @@ func (q *Q) AddCall(calls ...C) *Q {
 
 // WithOption updates compare option.
 // This is called by test codes.
-func (s *Q) WithOption(opts ...cmp.Option) *Q {
-	s.opts = opts
-	return s
+func (q *Q) WithOption(opts ...cmp.Option) *Q {
+	q.opts = opts
+	return q
 }
 
 // Call checks call parameter and returns result.
 // This is called by mock code.
-func (s *Q) Call(name string, param P) R {
-	s.t.Helper()
-	if s.index >= len(s.calls) {
-		s.t.Fatalf("no calls at #%d for %s\nparam=%+v", s.index, name, param)
+func (q *Q) Call(name string, param P) R {
+	q.t.Helper()
+	if q.index >= len(q.calls) {
+		q.t.Fatalf("no calls at #%d for %s\nparam=%+v", q.index, name, param)
 	}
-	c := s.calls[s.index]
-	if d := cmp.Diff(c.P, param, s.opts...); d != "" {
-		s.t.Fatalf("call for %s (#%d) has unexpected arguments: -want +got\n%s", name, s.index, d)
+	c := q.calls[q.index]
+	if d := cmp.Diff(c.P, param, q.opts...); d != "" {
+		q.t.Fatalf("call for %s (#%d) has unexpected arguments: -want +got\n%s", name, q.index, d)
 	}
-	s.index++
+	q.index++
 	return c.R
 }
 
 // T returns *testing.T.
 // This is called by mock code.
-func (s *Q) T() *testing.T {
-	return s.t
+func (q *Q) T() *testing.T {
+	return q.t
 }
 
 // IsEnd checks sequence has end or not.
 // This is called by test code.
-func (s *Q) IsEnd() {
-	s.t.Helper()
-	if s.index < len(s.calls) {
-		s.t.Fatalf("there are non-proceeded calles: %+v", s.calls[s.index:])
+func (q *Q) IsEnd() {
+	q.t.Helper()
+	if q.index < len(q.calls) {
+		q.t.Fatalf("there are non-proceeded calles: %+v", q.calls[q.index:])
 	}
 }

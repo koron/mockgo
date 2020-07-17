@@ -40,9 +40,9 @@ func NewQ(t *testing.T, calls ...Call) *Sequence {
 
 // AddCall adds call data.
 // This is called by test codes.
-func (q *Sequence) AddCall(calls ...Call) *Sequence {
-	q.calls = append(q.calls, calls...)
-	return q
+func (s *Sequence) AddCall(calls ...Call) *Sequence {
+	s.calls = append(s.calls, calls...)
+	return s
 }
 
 // WithOption updates compare option.
