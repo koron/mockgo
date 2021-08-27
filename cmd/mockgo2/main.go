@@ -5,8 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"go/ast"
+	"go/importer"
 	"go/parser"
 	"go/token"
+	"go/types"
 	"log"
 	"os"
 	"strings"
@@ -45,9 +47,27 @@ func run() error {
 	return nil
 }
 
+func getOnePackage(pkgs map[string]*ast.Package) (*ast.Package, error) {
+	if n := len(pkgs); n > 1 {
+		return nil, fmt.Errorf("found %d packages, expected just one", n)
+	}
+	for _, p := range pkgs {
+		return p, nil
+	}
+	return nil, errors.New("no packages found, expected one")
+}
+
+func astFiles(pkg *ast.Package) []*ast.File {
+	files := make([]*ast.File, 0, len(pkg.Files))
+	for _, f := range pkg.Files {
+		files = append(files, f)
+	}
+	return files
+}
+
 func parseDir(path string) (*ast.Package, error) {
-	fs := token.NewFileSet()
-	pkgs, err := parser.ParseDir(fs, path, func(fi os.FileInfo) bool {
+	fset := token.NewFileSet()
+	pkgs, err := parser.ParseDir(fset, path, func(fi os.FileInfo) bool {
 		if strings.HasSuffix(fi.Name(), "_test.go") {
 			return false
 		}
@@ -56,11 +76,16 @@ func parseDir(path string) (*ast.Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	if n := len(pkgs); n > 1 {
-		return nil, fmt.Errorf("found %d packages, expected just one", n)
+	pkg, err := getOnePackage(pkgs)
+	if err != nil {
+		return nil, err
 	}
-	for _, p := range pkgs {
-		return p, nil
+
+	conf := types.Config{Importer: importer.Default()}
+	_, err = conf.Check(path, fset, astFiles(pkg), nil)
+	if err != nil {
+		return nil, err
 	}
-	return nil, errors.New("no packages found, expected one")
+
+	return pkg, nil
 }
