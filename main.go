@@ -157,10 +157,7 @@ func path2pkgname(path string) (string, error) {
 
 func mockFilename(typn string) string {
 	// if mocktype name ends with "mock", truncate it for filename.
-	base := strings.ToLower(typn)
-	if strings.HasSuffix(base, "mock") {
-		base = base[0 : len(base)-4]
-	}
+	base := strings.TrimSuffix(strings.ToLower(typn), "mock")
 	if forTest {
 		return base + "_mock_test.go"
 	}
