@@ -11,7 +11,7 @@ mockgo generates a test mock for tye type.
 How to install or update.
 
 ```console
-$ go get -u github.com/koron/mockgo
+$ go install github.com/koron/mockgo@latest
 ```
 
 Generate mock for your types.
