@@ -1,6 +1,6 @@
 name: Go
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
 
@@ -13,15 +13,11 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     steps:
 
-    - uses: actions/setup-go@v2
+    - uses: actions/setup-go@v3
       with:
         go-version: 1.x
 
-    - name: Add $GOPATH/bin to $PATH
-      run: |
-        echo "::add-path::$(go env GOPATH)/bin"
-
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - run: go test
 
