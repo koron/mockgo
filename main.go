@@ -228,67 +228,7 @@ func generateMockType(outdir, mockTypn string, applyFormat bool, typ *srcdom.Typ
 	return nil
 }
 
-var (
-	verbose    bool
-	forTest    bool
-	mockSuffix bool
-	mockRev    int
-	noFormat   bool
-	version    bool
-
-	mockTypeGen mockTypeGenerator
-)
-
-func gen() error {
-	var (
-		pkgname  string
-		outdir   string
-		typnames []string
-	)
-	flag.BoolVar(&forTest, "fortest", false, "generate mock for plain test, without +mock")
-	flag.BoolVar(&mockSuffix, "mocksuffix", false, "add `Mock` suffix to generated mock types")
-	flag.IntVar(&mockRev, "revision", 1, "mock revision (1-3)")
-	flag.BoolVar(&noFormat, "noformat", false, "suppress to apply goimports")
-	flag.StringVar(&outdir, "outdir", ".", "output directory")
-	flag.StringVar(&pkgname, "package", "", "package name")
-	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
-	flag.BoolVar(&version, "version", false, "show version end exit")
-	flag.Parse()
-	typnames = flag.Args()
-
-	if version {
-		showVersion()
-		return nil
-	}
-
-	if pkgname == "" {
-		return errors.New("need -package option")
-	}
-	if len(typnames) == 0 {
-		return errors.New("need one or more type names")
-	}
-
-	switch mockRev {
-	case 1:
-		mockTypeGen = generateMockType1
-	case 2:
-		mockTypeGen = generateMockType2
-	case 3:
-		mockTypeGen = generateMockType3
-	default:
-		return fmt.Errorf("unknow mock revision: %d", mockRev)
-	}
-
-	// read source files, build srcdom.
-	path := filepath.ToSlash(pkgname)
-	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") {
-		path = filepath.Join(build.Default.GOPATH, "src", pkgname)
-	}
-	pkg, err := srcdom.Read(path)
-	if err != nil {
-		return err
-	}
-
+func generateMockTypeAll(outdir string, typnames []string, pkg *srcdom.Package) error {
 	var errs errs
 	for _, typn := range typnames {
 		var mockTypn string
@@ -318,6 +258,81 @@ func gen() error {
 	}
 	if len(errs) > 0 {
 		return errs
+	}
+	return nil
+}
+
+var (
+	verbose    bool
+	forTest    bool
+	mockSuffix bool
+	mockRev    int
+	noFormat   bool
+	version    bool
+
+	mockTypeGen mockTypeGenerator
+)
+
+func determieMockTypeGenerator(mockRev int) error {
+	switch mockRev {
+	case 1:
+		mockTypeGen = generateMockType1
+	case 2:
+		mockTypeGen = generateMockType2
+	case 3:
+		mockTypeGen = generateMockType3
+	default:
+		return fmt.Errorf("unknow mock revision: %d", mockRev)
+	}
+	return nil
+}
+
+func gen() error {
+	var (
+		pkgname  string
+		outdir   string
+		typnames []string
+	)
+	flag.BoolVar(&forTest, "fortest", false, "generate mock for plain test, without +mock")
+	flag.BoolVar(&mockSuffix, "mocksuffix", false, "add `Mock` suffix to generated mock types")
+	flag.IntVar(&mockRev, "revision", 1, "mock revision (1-3)")
+	flag.BoolVar(&noFormat, "noformat", false, "suppress to apply goimports")
+	flag.StringVar(&outdir, "outdir", ".", "output directory")
+	flag.StringVar(&pkgname, "package", "", "package name")
+	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
+	flag.BoolVar(&version, "version", false, "show version end exit")
+	flag.Parse()
+	typnames = flag.Args()
+
+	if version {
+		showVersion()
+		return nil
+	}
+
+	// check options
+	if pkgname == "" {
+		return errors.New("need -package option")
+	}
+	if len(typnames) == 0 {
+		return errors.New("need one or more type names")
+	}
+	if err := determieMockTypeGenerator(mockRev); err != nil {
+		return err
+	}
+
+	// read source files, build srcdom.
+	path := filepath.ToSlash(pkgname)
+	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "../") {
+		path = filepath.Join(build.Default.GOPATH, "src", pkgname)
+	}
+	pkg, err := srcdom.Read(path)
+	if err != nil {
+		return err
+	}
+
+	err = generateMockTypeAll(outdir, typnames, pkg)
+	if err != nil {
+		return err
 	}
 	verbosef("complete successfully")
 	return nil
