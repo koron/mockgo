@@ -16,6 +16,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/koron-go/srcdom"
+	"github.com/koron/mockgo/internal/common"
+	"github.com/koron/mockgo/internal/mock1"
 	"golang.org/x/tools/imports"
 )
 
@@ -273,7 +275,7 @@ var (
 func determieMockTypeGenerator(mockRev int) error {
 	switch mockRev {
 	case 1:
-		mockTypeGen = generateMockType1
+		mockTypeGen = mock1.Generate
 	case 2:
 		mockTypeGen = generateMockType2
 	case 3:
@@ -299,7 +301,9 @@ func gen() error {
 	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
 	flag.BoolVar(&version, "version", false, "show version end exit")
 	flag.Parse()
+
 	typnames = flag.Args()
+	common.ForTest = forTest
 
 	if version {
 		showVersion()
