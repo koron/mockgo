@@ -18,6 +18,7 @@ import (
 	"github.com/koron-go/srcdom"
 	"github.com/koron/mockgo/internal/common"
 	"github.com/koron/mockgo/internal/mock1"
+	"github.com/koron/mockgo/internal/mock2"
 	"golang.org/x/tools/imports"
 )
 
@@ -277,7 +278,7 @@ func determieMockTypeGenerator(mockRev int) error {
 	case 1:
 		mockTypeGen = mock1.Generate
 	case 2:
-		mockTypeGen = generateMockType2
+		mockTypeGen = mock2.Generate
 	case 3:
 		mockTypeGen = generateMockType3
 	default:
