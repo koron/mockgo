@@ -105,9 +105,9 @@ There are three revisions of mock.
 
 for mocking `interface` types, `-fortest` and `-mocksuffix` will work well.
 
-    ```console
-    $ mockgo -package ./ -outdir . -revision 3 -fortest -mocksuffix Interface1 Interface2
-    ```
+```console
+$ mockgo -package ./ -outdir . -revision 3 -fortest -mocksuffix Interface1 Interface2
+```
 
 This generates mock types `Interface1Mock` and `Interface2Mock` without build
 tag.  `Interface1Mock` is a mock for `Interface1`, and `Interface2Mock` is for
@@ -117,9 +117,9 @@ tag.  `Interface1Mock` is a mock for `Interface1`, and `Interface2Mock` is for
 
 for mocking `struct` types, no need special options.
 
-    ```console
-    $ mockgo -package ../pkgA -outdir . -revision 3 Component1 Component2
-    ```
+```console
+$ mockgo -package ../pkgA -outdir . -revision 3 Component1 Component2
+```
 
 This generates mock types `Component1` and `Component2` with `mock` build tag.
 `Component1` is a mock for `pkgA.Component1`, and `Component2` is for
