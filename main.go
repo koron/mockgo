@@ -187,7 +187,7 @@ func gen() error {
 	flag.BoolVar(&forTest, "fortest", false, "generate mock for plain test, without +mock")
 	flag.BoolVar(&mockSuffix, "mocksuffix", false, "add `Mock` suffix to generated mock types")
 	flag.IntVar(&mockRev, "revision", 1, "mock revision (1-3)")
-	flag.BoolVar(&noFormat, "noformat", false, "suppress to apply goimports")
+	flag.BoolVar(&noFormat, "noformat", false, "suppress goimports on generation mock code")
 	flag.StringVar(&outdir, "outdir", ".", "output directory")
 	flag.StringVar(&pkgname, "package", "", "package name")
 	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
