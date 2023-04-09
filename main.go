@@ -11,11 +11,13 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/koron-go/srcdom"
+	"github.com/koron/mockgo/internal/common"
+	"github.com/koron/mockgo/internal/mock1"
+	"github.com/koron/mockgo/internal/mock2"
+	"github.com/koron/mockgo/internal/mock3"
 	"golang.org/x/tools/imports"
 )
 
@@ -37,114 +39,6 @@ func (e errs) Error() string {
 		fmt.Fprintf(b, "#%d - %v\n", i+1, err)
 	}
 	return b.String()
-}
-
-type variable struct {
-	name string
-	typ  string
-}
-
-type vars []*variable
-
-func (vv *vars) add(v *variable) {
-	*vv = append(*vv, v)
-}
-
-func (vv vars) nameTypes() string {
-	return vv.join(func(v *variable) string {
-		return v.name + " " + v.typ
-	})
-}
-
-func (vv vars) names() string {
-	return vv.join(func(v *variable) string {
-		return v.name
-	})
-}
-
-func (vv vars) namesPrefix(prefix string) string {
-	return vv.join(func(v *variable) string {
-		return prefix + "." + v.name
-	})
-}
-
-func (vv vars) types() string {
-	return vv.join(func(v *variable) string {
-		return v.typ
-	})
-}
-
-func (vv vars) join(fn func(v *variable) string) string {
-	b := &strings.Builder{}
-	for i, v := range vv {
-		if i > 0 {
-			b.WriteString(", ")
-		}
-		b.WriteString(fn(v))
-	}
-	return b.String()
-}
-
-type method struct {
-	typn string
-	name string
-	args vars
-	rets vars
-}
-
-func (m *method) pname() string {
-	return m.typn + m.name + "_P"
-}
-
-func (m *method) rname() string {
-	return m.typn + m.name + "_R"
-}
-
-func vname(name string, attr string, n int) string {
-	if name != "" {
-		return name
-	}
-	return attr + strconv.Itoa(n)
-}
-
-func toPub(s string) string {
-	if s == "" {
-		return ""
-	}
-	_, n := utf8.DecodeRuneInString(s)
-	p, r := s[:n], s[n:]
-	return strings.ToUpper(p) + r
-}
-
-func filterMethods(src []*srcdom.Func, typname string) []*method {
-	var dst []*method
-	for _, f := range src {
-		if !f.IsPublic() {
-			continue
-		}
-		m := &method{typn: typname, name: f.Name}
-		for i, p := range f.Params {
-			m.args.add(&variable{
-				name: vname(p.Name, "in", i),
-				typ:  p.Type,
-			})
-		}
-		for i, r := range f.Results {
-			m.rets.add(&variable{
-				name: vname(r.Name, "Out", i),
-				typ:  r.Type,
-			})
-		}
-		dst = append(dst, m)
-	}
-	return dst
-}
-
-func toStructType(typ string) string {
-	if strings.HasPrefix(typ, "...") {
-		return "[]" + typ[3:]
-	}
-	return typ
 }
 
 func path2pkgname(path string) (string, error) {
@@ -273,11 +167,11 @@ var (
 func determieMockTypeGenerator(mockRev int) error {
 	switch mockRev {
 	case 1:
-		mockTypeGen = generateMockType1
+		mockTypeGen = mock1.Generate
 	case 2:
-		mockTypeGen = generateMockType2
+		mockTypeGen = mock2.Generate
 	case 3:
-		mockTypeGen = generateMockType3
+		mockTypeGen = mock3.Generate
 	default:
 		return fmt.Errorf("unknow mock revision: %d", mockRev)
 	}
@@ -299,7 +193,9 @@ func gen() error {
 	flag.BoolVar(&verbose, "verbose", false, "show verbose/debug messages to stderr")
 	flag.BoolVar(&version, "version", false, "show version end exit")
 	flag.Parse()
+
 	typnames = flag.Args()
+	common.ForTest = forTest
 
 	if version {
 		showVersion()
