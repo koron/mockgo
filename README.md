@@ -133,6 +133,8 @@ mockgo は前述の `foo.Foo` 型のソースコードから、
 モックである `FooMock` (もしくはモックの `Foo`)を
 自動的に生成するコマンドである。
 
+([Original idea from my post in Japanese](https://www.kaoriya.net/blog/2020/01/20/never-interface-only-for-tests/))
+
 ## Advanced usage
 
 ### Mocking `interface`
