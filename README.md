@@ -36,13 +36,17 @@ $ cd ~/go/src/github.com/your/project/package
 $ mockgo -pacakge github.com/thirdparity/libarary TargetType1 TargetType2
 ```
 
-### Usage
+This generate mocks for `TargetType1` and `TargetType2` in
+`"github.com/thirdparty/library"` package to current directory
+(~/go/src/github.com/your/project/package).
+
+## Usage
 
 ```console
 $ mockgo {OPTIONS} -package {package name or relative path} [target classes...]
 ```
 
-#### Options
+### Options
 
 *   `-fortest` - generate mock for plain test, without `+mock` tag)
 *   `-mocksuffix` - add `Mock` suffix to generated mock types
@@ -58,7 +62,7 @@ $ mockgo {OPTIONS} -package {package name or relative path} [target classes...]
 
 *   `-verbose` - show verbose/debug messages to stderr
 
-#### Target classes
+### Target classes
 
 Where `[target classes...]` accepts two forms of name to specify type.
 
@@ -70,7 +74,7 @@ Where `[target classes...]` accepts two forms of name to specify type.
 
     `-mocksuffix` is ignored.
 
-#### Mock revision
+### Mock revision
 
 There are three revisions of mock.
 
