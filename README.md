@@ -99,6 +99,40 @@ There are three revisions of mock.
     * GOOD: support all GOOD items in revision 2.
     * GOOD: fault-tolerance on constructing function call sequence.
 
+## Type aliased mock
+
+(TO BE TRANSLATED)
+
+普通は別のパッケージが提供する型はそのまま使う。
+しかし type aliased mockでは、いったん自身のパッケージにその型のエイリアスを作る。
+
+```go
+//go:build !mock
+
+type Foo = foo.Foo
+```
+
+この型エイリアスをビルドタグを用いたときだけモック型に差し替える。
+
+```go
+//go:build mock
+
+type Foo = FooMock
+```
+
+テストを実行する時には、タグを指定してモックへ差し替える。
+
+```console
+$ go test -tags mock
+```
+
+このようにすると `interface` を介さずにモックを利用できる。
+これを type aliased mock と呼んでいる。
+
+mockgo は前述の `foo.Foo` 型のソースコードから、
+モックである `FooMock` (もしくはモックの `Foo`)を
+自動的に生成するコマンドである。
+
 ## Advanced usage
 
 ### Mocking `interface`
