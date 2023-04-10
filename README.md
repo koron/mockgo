@@ -105,10 +105,9 @@ There are three revisions of mock.
 
 ## Type aliased mock
 
-(TO BE TRANSLATED)
-
-普通は別のパッケージが提供する型はそのまま使う。
-しかし type aliased mockでは、いったん自身のパッケージにその型のエイリアスを作る。
+Usually, when using types provided by another package, you use them as they
+are. However, with a type aliased mock, you first create an alias for that type
+in your own package.
 
 ```go
 //go:build !mock
@@ -116,7 +115,8 @@ There are three revisions of mock.
 type Foo = foo.Foo
 ```
 
-この型エイリアスをビルドタグを用いたときだけモック型に差し替える。
+This type alias will be replaced with the mock type only when building with a
+specific build tag `mock`.
 
 ```go
 //go:build mock
@@ -124,20 +124,32 @@ type Foo = foo.Foo
 type Foo = FooMock
 ```
 
-テストを実行する時には、タグを指定してモックへ差し替える。
+When running tests, you specify the tag to switch to the mock.
 
 ```console
 $ go test -tags mock
 ```
 
-このようにすると `interface` を介さずにモックを利用できる。
-これを type aliased mock と呼んでいる。
+This allows you to use the mock without going through an interface. This is
+called a type aliased mock.
 
-mockgo は前述の `foo.Foo` 型のソースコードから、
-モックである `FooMock` (もしくはモックの `Foo`)を
-自動的に生成するコマンドである。
+Mockgo is a command that automatically generates a mock, either FooMock or Foo
+depending on whether it is a mock or not, from the source code of the
+aforementioned foo.Foo type.
 
 ([Original idea from my post in Japanese](https://www.kaoriya.net/blog/2020/01/20/never-interface-only-for-tests/))
+
+## How to check calls with mockrt3.Q
+
+1. Create `mockrt3.Q` with `mockrt3.NewQ(*testing.T, ...)`
+2. `AddCall` to add calles (`[]mockrt3.C`). A call is consist from parameter
+   `P` and return values `R`. You can add calls with `NewQ` also.
+3. Create a mock with `mockrt3.Q`
+4. Run test target code with a mock.
+5. A mock will record failures with `testing.T` when unexpected calls made by
+   target code.
+
+(TODO: Add example codes)
 
 ## Advanced usage
 
