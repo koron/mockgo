@@ -2,7 +2,6 @@
 
 [![GoDoc](https://godoc.org/github.com/koron/mockgo?status.svg)](https://godoc.org/github.com/koron/mockgo)
 [![Actions/Go](https://github.com/koron/mockgo/workflows/Go/badge.svg)](https://github.com/koron/mockgo/actions?query=workflow%3AGo)
-[![Go Report Card](https://goreportcard.com/badge/github.com/koron/mockgo)](https://goreportcard.com/report/github.com/koron/mockgo)
 
 Mockgo is a tool that automatically generates mocks for unit testing based on
 your types.
